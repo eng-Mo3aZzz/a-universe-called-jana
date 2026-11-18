@@ -10,33 +10,60 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UniverseRouteImport } from './routes/universe'
+import { Route as UniverseIndexRouteImport } from './routes/universe.index'
+import { Route as UniverseStageRouteImport } from './routes/universe.$stage'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UniverseRoute = UniverseRouteImport.update({
+  id: '/universe',
+  path: '/universe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UniverseIndexRoute = UniverseIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UniverseRoute,
+} as any)
+const UniverseStageRoute = UniverseStageRouteImport.update({
+  id: '/$stage',
+  path: '/$stage',
+  getParentRoute: () => UniverseRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/universe': typeof UniverseRouteWithChildren
+  '/universe/$stage': typeof UniverseStageRoute
+  '/universe/': typeof UniverseIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/universe/$stage': typeof UniverseStageRoute
+  '/universe': typeof UniverseIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/universe': typeof UniverseRouteWithChildren
+  '/universe/$stage': typeof UniverseStageRoute
+  '/universe/': typeof UniverseIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/universe' | '/universe/$stage' | '/universe/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/universe/$stage' | '/universe'
+  id: '__root__' | '/' | '/universe' | '/universe/$stage' | '/universe/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  UniverseRoute: typeof UniverseRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +75,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/universe': {
+      id: '/universe'
+      path: '/universe'
+      fullPath: '/universe'
+      preLoaderRoute: typeof UniverseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/universe/': {
+      id: '/universe/'
+      path: '/'
+      fullPath: '/universe/'
+      preLoaderRoute: typeof UniverseIndexRouteImport
+      parentRoute: typeof UniverseRoute
+    }
+    '/universe/$stage': {
+      id: '/universe/$stage'
+      path: '/$stage'
+      fullPath: '/universe/$stage'
+      preLoaderRoute: typeof UniverseStageRouteImport
+      parentRoute: typeof UniverseRoute
+    }
   }
 }
 
+interface UniverseRouteChildren {
+  UniverseStageRoute: typeof UniverseStageRoute
+  UniverseIndexRoute: typeof UniverseIndexRoute
+}
+
+const UniverseRouteChildren: UniverseRouteChildren = {
+  UniverseStageRoute: UniverseStageRoute,
+  UniverseIndexRoute: UniverseIndexRoute,
+}
+
+const UniverseRouteWithChildren = UniverseRoute._addFileChildren(
+  UniverseRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  UniverseRoute: UniverseRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
