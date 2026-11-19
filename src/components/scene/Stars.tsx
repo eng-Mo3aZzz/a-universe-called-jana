@@ -48,7 +48,7 @@ function build(count: number, rMin: number, rMax: number, sizeMin: number, sizeM
     pos.set([Math.cos(th) * s * r, u * r * 0.8, Math.sin(th) * s * r - 10], i * 3);
     size[i] = sizeMin + (sizeMax - sizeMin) * Math.pow(rand(), 3);
     phase[i] = rand();
-    c.set(palette[Math.floor(rand() * palette.length)]);
+    c.set(palette[Math.floor(rand() * palette.length)] ?? "#ffffff");
     col.set([c.r, c.g, c.b], i * 3);
   }
   const g = new THREE.BufferGeometry();
@@ -82,8 +82,8 @@ export function Stars() {
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
-    starMat.uniforms.uTime.value = t;
-    dustMat.uniforms.uTime.value = t * 0.15;
+    (starMat.uniforms as { uTime: { value: number } }).uTime.value = t;
+    (dustMat.uniforms as { uTime: { value: number } }).uTime.value = t * 0.15;
     if (group.current) group.current.rotation.y += Math.min(delta, 0.05) * 0.004;
   });
 

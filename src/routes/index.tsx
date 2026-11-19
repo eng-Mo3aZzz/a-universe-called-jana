@@ -37,7 +37,9 @@ function GatePage() {
   useEffect(() => {
     const token = readToken();
     if (!token) return;
-    void check({ data: { token } }).then((r) => r.valid && navigate({ to: "/universe" }));
+    void check({ data: { token } }).then((r) => {
+      if (r.valid) void navigate({ to: "/universe" });
+    });
   }, [check, navigate]);
 
   async function onSubmit(e: FormEvent) {

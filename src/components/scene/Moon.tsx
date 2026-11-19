@@ -18,6 +18,7 @@ export function Moon() {
   const { size } = useThree();
   const { map, glow } = useMemo(() => ({ map: makeMoonTexture(), glow: makeGlowTexture() }), []);
   const goal = useMemo(() => new THREE.Vector3(), []);
+  const placed = useRef(false);
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05);
     const mode = useScene.getState().mode;
@@ -26,17 +27,18 @@ export function Moon() {
     const cam = state.camera.position;
     const half = Math.max(1, cam.z - z) * Math.tan((25 * Math.PI) / 180);
     const aspect = size.width / size.height;
-    goal.set(fx * half * aspect * 0.62, fy * half * 0.62, z);
-    group.current?.position.lerp(goal, 1 - Math.exp(-0.9 * dt));
+    goal.set(fx * half * aspect * 0.78, fy * half * 0.8, z);
+    group.current?.position.lerp(goal, placed.current ? 1 - Math.exp(-0.9 * dt) : 1);
+    placed.current = true;
     if (mesh.current) mesh.current.rotation.y += dt * 0.02;
   });
   return (
     <group ref={group} position={[2, 4, -14]}>
       <mesh ref={mesh}>
-        <sphereGeometry args={[1.5, 48, 32]} />
+        <sphereGeometry args={[1.1, 48, 32]} />
         <meshStandardMaterial map={map} emissiveMap={map} emissive="#fff1e6" emissiveIntensity={0.55} roughness={1} />
       </mesh>
-      <sprite scale={[9, 9, 1]}>
+      <sprite scale={[7, 7, 1]}>
         <spriteMaterial map={glow} color="#ffd9cf" transparent opacity={0.55} depthWrite={false} blending={THREE.AdditiveBlending} />
       </sprite>
       <pointLight color="#ffe6d8" intensity={6} distance={30} />

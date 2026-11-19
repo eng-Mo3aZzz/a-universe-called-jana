@@ -94,9 +94,10 @@ export function Nebula() {
     [],
   );
   useFrame((state, delta) => {
-    mat.uniforms.uTime.value = state.clock.elapsedTime;
+    const uniforms = mat.uniforms as { uTime: { value: number }; uFinale: { value: number } };
+    uniforms.uTime.value = state.clock.elapsedTime;
     const goal = useScene.getState().mode === "finale" ? 1 : 0;
-    const u = mat.uniforms.uFinale;
+    const u = uniforms.uFinale;
     u.value += (goal - u.value) * (1 - Math.exp(-0.8 * Math.min(delta, 0.05)));
   });
   return (

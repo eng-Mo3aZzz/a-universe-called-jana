@@ -27,7 +27,7 @@ function usePlanetLayout() {
     const { halfH, halfW } = visibleHalf("hub", 0, aspect);
     const top = halfH * 0.66;
     const bottom = -halfH * 0.74;
-    const amp = Math.min(halfW * 0.42, 3.4);
+    const amp = Math.min(halfW * 0.55, 3.6);
     const radius = THREE.MathUtils.clamp(halfW * 0.15, 0.3, 0.55);
     return STAGE_IDS.map((id, i) => {
       const y = top + (bottom - top) * (i / (STAGE_IDS.length - 1));
@@ -74,7 +74,7 @@ function Planet({ id, pos, r, index }: { id: StageId; pos: THREE.Vector3; r: num
     g.position.set(pos.x, pos.y + Math.sin(t * 0.8 + index) * 0.07, pos.z);
     g.scale.setScalar(appear.current * pop);
     if (body.current) body.current.rotation.y += dt * 0.25;
-    atmo.uniforms.uIntensity.value = unlocked ? (current ? 1.2 + Math.sin(t * 2.4) * 0.4 : 0.9) : 0.25;
+    (atmo.uniforms as { uIntensity: { value: number } }).uIntensity.value = unlocked ? (current ? 1.2 + Math.sin(t * 2.4) * 0.4 : 0.9) : 0.25;
     if (halo.current) {
       const m = halo.current.material as THREE.MeshBasicMaterial;
       const on = current || fresh;
@@ -110,7 +110,7 @@ function Planet({ id, pos, r, index }: { id: StageId; pos: THREE.Vector3; r: num
         <button
           type="button"
           onClick={select}
-          className={`planet-label flex items-center gap-1.5 -translate-y-1/2 ${labelLeft ? "-translate-x-full" : ""} ${current ? "planet-label-current" : ""} ${unlocked ? "" : "planet-label-locked"}`}
+          className={`planet-label absolute left-0 top-0 flex items-center gap-1.5 -translate-y-1/2 ${labelLeft ? "-translate-x-full" : ""} ${current ? "planet-label-current" : ""} ${unlocked ? "" : "planet-label-locked"}`}
           dir="rtl"
         >
           {done ? <Check className="size-3.5 text-rose-gold" /> : unlocked ? <Sparkles className="size-3.5 text-rose-gold" /> : <Lock className="size-3.5" />}

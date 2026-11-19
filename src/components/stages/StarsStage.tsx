@@ -26,7 +26,7 @@ export function StarsStage({ onComplete, done }: StageProps) {
   const count = stars.items.filter((s) => opened.includes(s.id)).length;
   const all = count === stars.items.length;
   const Icon = item ? ICONS[item.kind] : MessageCircleHeart;
-  const pts = stars.items.map((_, i) => SPOTS[i % SPOTS.length]);
+  const pts = stars.items.map((_, i) => SPOTS[i % SPOTS.length] ?? [50, 50]);
 
   return (
     <StageShell stageId="stars" footer={<CompleteButton ready={all} hint={`فتحتي ${ar(count)} من ${ar(stars.items.length)} نجوم`} onComplete={onComplete} done={done} />}>
@@ -36,7 +36,7 @@ export function StarsStage({ onComplete, done }: StageProps) {
           <polyline points={pts.map(([x, y]) => `${x},${y}`).join(" ")} fill="none" stroke="var(--rose-gold)" strokeOpacity="0.25" strokeWidth="0.3" strokeDasharray="1 1.2" vectorEffect="non-scaling-stroke" />
         </svg>
         {stars.items.map((s, i) => {
-          const [x, y] = pts[i];
+          const [x, y] = pts[i] ?? [50, 50];
           const isOpen = opened.includes(s.id);
           return (
             <motion.button

@@ -22,13 +22,9 @@ export function WelcomeStage({ onComplete, done }: StageProps) {
         <motion.p dir="ltr" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 1.2 }} className="mt-3 font-display text-3xl italic text-cream/90">
           Happy Birthday
         </motion.p>
-        <h2 className="mt-1 flex justify-center font-script text-[6.5rem] leading-[1.1] text-shimmer glow-text">
-          {herName.split("").map((ch, i) => (
-            <motion.span key={i} initial={{ opacity: 0, y: 40, filter: "blur(10px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} transition={{ delay: 0.9 + i * 0.25, duration: 1.1 }}>
-              {ch}
-            </motion.span>
-          ))}
-        </h2>
+        <motion.div initial={{ opacity: 0, y: 40, scale: 0.85 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.9, duration: 1.6, ease: [0.2, 0.8, 0.2, 1] }}>
+          <h2 className="mt-1 font-script text-[6.5rem] leading-[1.25] text-shimmer">{herName}</h2>
+        </motion.div>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 1 }} className="font-script text-2xl text-cream">
           {welcome.title}
         </motion.p>

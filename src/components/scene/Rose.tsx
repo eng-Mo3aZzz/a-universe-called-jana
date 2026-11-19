@@ -6,13 +6,13 @@ import { sharedGeometry } from "./geometry";
 export type RosePalette = { inner: string; outer: string; sheen: string };
 
 export const ROSE_PALETTES = {
-  burgundy: { inner: "#4a0717", outer: "#9c1f3e", sheen: "#ff9db5" },
+  burgundy: { inner: "#3a0410", outer: "#8a1431", sheen: "#ff7f9f" },
   blush: { inner: "#b2385a", outer: "#f6b6c4", sheen: "#ffe3ea" },
   champagne: { inner: "#b45c4c", outer: "#f3cdb2", sheen: "#fff0e0" },
   wine: { inner: "#360411", outer: "#7d1430", sheen: "#ff8fab" },
 } satisfies Record<string, RosePalette>;
 
-const PETALS = 26;
+const PETALS = 30;
 const GREENS = 7; // 5 sepals + 2 leaves
 const GOLDEN = 2.39996;
 
@@ -40,7 +40,7 @@ export function Rose({ bloom = 1, bloomRef, palette = ROSE_PALETTES.burgundy, st
         roughness: 0.5,
         metalness: 0,
         sheen: 1,
-        sheenRoughness: 0.35,
+        sheenRoughness: 0.5,
         sheenColor: new THREE.Color(palette.sheen),
         emissive: new THREE.Color(palette.inner).multiplyScalar(0.12),
       }),
@@ -82,13 +82,13 @@ export function Rose({ bloom = 1, bloomRef, palette = ROSE_PALETTES.burgundy, st
         const t = i / (PETALS - 1);
         const az = i * GOLDEN + seed;
         const closed = 0.04 + 0.3 * t * t;
-        const open = 0.2 + 1.32 * Math.pow(t, 0.85);
+        const open = 0.18 + 1.12 * Math.pow(t, 0.95);
         const theta = closed + (open - closed) * b * (0.22 + 0.78 * t);
         const len = 0.3 + 0.74 * Math.pow(t, 0.8);
         const r = 0.012 + 0.06 * t * (0.4 + b * 0.6);
         dummy.position.set(Math.sin(az) * r, -0.05 * t, Math.cos(az) * r);
         dummy.rotation.set(theta, az, Math.sin(i * 3.1) * 0.08, "YXZ");
-        dummy.scale.set(len * (0.95 + 0.5 * t), len, len * (1.5 - 0.7 * t));
+        dummy.scale.set(len * (0.9 + 0.32 * t), len, len * (1.6 - 0.6 * t));
         dummy.updateMatrix();
         mesh.setMatrixAt(i, dummy.matrix);
       }

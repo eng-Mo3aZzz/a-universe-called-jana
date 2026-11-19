@@ -15,7 +15,7 @@ const ROSES = [
 const LAYOUT: Record<SceneMode, { z: number; spread: number; scale: number; show: number[] }> = {
   gate: { z: 1, spread: 1, scale: 1, show: [1, 1, 1, 1] },
   portal: { z: 5, spread: 2.6, scale: 1.4, show: [1, 1, 1, 1] },
-  hub: { z: -1.5, spread: 1.02, scale: 0.85, show: [0, 1, 1, 0] },
+  hub: { z: -2.5, spread: 1.08, scale: 0.75, show: [0, 0, 1, 1] },
   stage: { z: -3, spread: 1, scale: 0.9, show: [0, 1, 1, 0] },
   finale: { z: -4, spread: 2.4, scale: 0.6, show: [0, 0, 0, 0] },
 };
@@ -24,6 +24,7 @@ export function EdgeRoses() {
   const refs = useRef<(THREE.Group | null)[]>([]);
   const { size } = useThree();
   const goal = useMemo(() => new THREE.Vector3(), []);
+  const placed = useRef(false);
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05);
     const mode = useScene.getState().mode;
@@ -37,12 +38,13 @@ export function EdgeRoses() {
       if (!g) return;
       const spread = L.show[i] ? L.spread : L.spread * 2.2;
       goal.set(r.corner[0] * (halfW - 0.15) * spread, r.corner[1] * (halfH - 0.35) * spread + Math.sin(t * 0.5 + i) * 0.08, L.z);
-      const k = 1 - Math.exp(-(mode === "portal" ? 1.8 : 1.1) * dt);
+      const k = placed.current ? 1 - Math.exp(-(mode === "portal" ? 1.8 : 1.1) * dt) : 1;
       g.position.lerp(goal, k);
       const s = g.scale.x + (base - g.scale.x) * k;
       g.scale.setScalar(s);
       g.rotation.y = r.rot[1] + Math.sin(t * 0.25 + i) * 0.12;
     });
+    placed.current = true;
   });
   return (
     <>
@@ -55,7 +57,7 @@ export function EdgeRoses() {
           position={[r.corner[0] * 6, r.corner[1] * 6, 0]}
           rotation={[r.rot[0], r.rot[1], r.rot[2]]}
         >
-          <Rose palette={r.palette} seed={r.seed} bloom={0.92} />
+          <Rose palette={r.palette} seed={r.seed} bloom={0.78} />
         </group>
       ))}
     </>

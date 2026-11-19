@@ -28,7 +28,7 @@ export function HeroRose() {
         <Rose bloomRef={bloom} palette={ROSE_PALETTES.burgundy} seed={0.8} breathe={false} />
       </group>
       <Sparkles count={60} scale={[4, 3, 3]} size={3} speed={0.3} color="#ffd8c4" opacity={0.8} />
-      <spotLight position={[0, 4, 4]} angle={0.6} penumbra={0.8} intensity={40} color="#ffe3d6" distance={14} />
+      <spotLight position={[0, 4, 4]} angle={0.6} penumbra={0.8} intensity={16} color="#ffe3d6" distance={14} />
     </group>
   );
 }

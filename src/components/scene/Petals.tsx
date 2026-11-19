@@ -31,7 +31,7 @@ export function Petals() {
     const m = mesh.current;
     if (!m) return;
     const palette = ["#9c1f3e", "#f3a7ba", "#d9677f", "#f6cdb8", "#6e1029"].map((c) => new THREE.Color(c));
-    data.forEach((_, i) => m.setColorAt(i, palette[i % palette.length]));
+    data.forEach((_, i) => m.setColorAt(i, palette[i % palette.length] ?? palette[0]!));
     if (m.instanceColor) m.instanceColor.needsUpdate = true;
   }, [data]);
 

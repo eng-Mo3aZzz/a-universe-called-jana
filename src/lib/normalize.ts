@@ -21,5 +21,5 @@ export function matchesAny(input: string, answers: readonly string[]): boolean {
 }
 
 export function ar(n: number | string): string {
-  return String(n).replace(/[0-9]/g, (d) => ARABIC_DIGITS[Number(d)]);
+  return String(n).replace(/[0-9]/g, (d) => ARABIC_DIGITS[Number(d)] ?? d);
 }
