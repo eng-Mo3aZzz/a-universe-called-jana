@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Html, Line } from "@react-three/drei";
-import { Check, Lock, Sparkles } from "lucide-react";
+import { Line } from "@react-three/drei";
+import { planetScreen } from "@/lib/planet-screen";
 import { useMemo, useRef } from "react";
 import { useProgress } from "@/lib/progress-store";
 import { currentStage, isStageUnlocked, STAGE_IDS, type StageId } from "@/lib/progress-rules";
@@ -25,7 +25,7 @@ function usePlanetLayout() {
   return useMemo(() => {
     const aspect = size.width / size.height;
     const { halfH, halfW } = visibleHalf("hub", 0, aspect);
-    const top = halfH * 0.66;
+    const top = halfH * 0.58;
     const bottom = -halfH * 0.74;
     const amp = Math.min(halfW * 0.55, 3.6);
     const radius = THREE.MathUtils.clamp(halfW * 0.15, 0.3, 0.55);
@@ -63,6 +63,8 @@ function Planet({ id, pos, r, index }: { id: StageId; pos: THREE.Vector3; r: num
     [meta],
   );
   const appear = useRef(0);
+  const { size, camera } = useThree();
+  const tmp = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05);
@@ -74,6 +76,16 @@ function Planet({ id, pos, r, index }: { id: StageId; pos: THREE.Vector3; r: num
     g.position.set(pos.x, pos.y + Math.sin(t * 0.8 + index) * 0.07, pos.z);
     g.scale.setScalar(appear.current * pop);
     if (body.current) body.current.rotation.y += dt * 0.25;
+    g.updateMatrixWorld();
+    tmp.setFromMatrixPosition(g.matrixWorld);
+    const dist = tmp.distanceTo(camera.position);
+    tmp.project(camera);
+    const fov = (camera as THREE.PerspectiveCamera).fov;
+    planetScreen[id] = {
+      x: (tmp.x * 0.5 + 0.5) * size.width,
+      y: (-tmp.y * 0.5 + 0.5) * size.height,
+      r: (r * g.scale.x * size.height) / (2 * dist * Math.tan((fov * Math.PI) / 360)),
+    };
     (atmo.uniforms as { uIntensity: { value: number } }).uIntensity.value = unlocked ? (current ? 1.2 + Math.sin(t * 2.4) * 0.4 : 0.9) : 0.25;
     if (halo.current) {
       const m = halo.current.material as THREE.MeshBasicMaterial;
@@ -83,9 +95,11 @@ function Planet({ id, pos, r, index }: { id: StageId; pos: THREE.Vector3; r: num
     }
   });
 
-  const select = () => useScene.getState().planetHandler?.(id);
+  const select = () => {
+    const s = useScene.getState();
+    if (s.mode === "hub") s.planetHandler?.(id);
+  };
   const tint = unlocked ? "#ffffff" : "#4d4352";
-  const labelLeft = pos.x > 0;
 
   return (
     <group ref={group} position={pos.toArray()}>
@@ -106,28 +120,18 @@ function Planet({ id, pos, r, index }: { id: StageId; pos: THREE.Vector3; r: num
         <ringGeometry args={[r * 1.3, r * 1.38, 64]} />
         <meshBasicMaterial color="#ffd8c0" transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} />
       </mesh>
-      <Html position={[labelLeft ? -(r + 0.12) : r + 0.12, 0, 0]} zIndexRange={[5, 0]}>
-        <button
-          type="button"
-          onClick={select}
-          className={`planet-label absolute left-0 top-0 flex items-center gap-1.5 -translate-y-1/2 ${labelLeft ? "-translate-x-full" : ""} ${current ? "planet-label-current" : ""} ${unlocked ? "" : "planet-label-locked"}`}
-          dir="rtl"
-        >
-          {done ? <Check className="size-3.5 text-rose-gold" /> : unlocked ? <Sparkles className="size-3.5 text-rose-gold" /> : <Lock className="size-3.5" />}
-          <span>{meta.name}</span>
-        </button>
-      </Html>
     </group>
   );
 }
 
 export function Planets() {
   const layout = usePlanetLayout();
+  const visible = useScene((s) => s.mode === "hub");
   const completed = useProgress((s) => s.completed);
   const points = layout.map((p) => p.pos);
   const doneIndex = STAGE_IDS.filter((id) => completed.includes(id)).length;
   return (
-    <group>
+    <group visible={visible}>
       <Line points={points} color="#e8c7d8" lineWidth={1} dashed dashSize={0.12} gapSize={0.12} transparent opacity={0.28} />
       {doneIndex > 0 && <Line points={points.slice(0, Math.min(doneIndex + 1, points.length))} color="#f1c59f" lineWidth={1.6} transparent opacity={0.85} />}
       {layout.map((p, i) => (

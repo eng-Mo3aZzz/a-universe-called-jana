@@ -23,7 +23,7 @@ export function HeroRose() {
     }
   });
   return (
-    <group position={[0, 1.25, 0]} rotation={[0.55, 0, 0]}>
+    <group position={[0, 1.15, 0]} rotation={[0.85, 0, 0]}>
       <group ref={group} scale={0.2}>
         <Rose bloomRef={bloom} palette={ROSE_PALETTES.burgundy} seed={0.8} breathe={false} />
       </group>

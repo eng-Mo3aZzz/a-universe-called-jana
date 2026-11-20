@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Sparkle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { PlanetLabels } from "@/components/jana/PlanetLabels";
 import { SecretSpark } from "@/components/jana/SecretSpark";
+import type { StageId } from "@/lib/progress-rules";
 import { ar } from "@/lib/normalize";
 import { completedCount, isStageUnlocked, STAGE_IDS } from "@/lib/progress-rules";
 import { useProgress } from "@/lib/progress-store";
@@ -34,17 +36,22 @@ function Hub() {
   const [fromPortal] = useState(() => useScene.getState().fromPortal);
   const done = completedCount(completed);
 
-  useEffect(() => {
-    useScene.getState().setFromPortal(false);
-    useScene.getState().setPlanetHandler((id) => {
+  const select = useCallback(
+    (id: StageId) => {
       if (isStageUnlocked(id, useProgress.getState().completed)) {
-        navigate({ to: "/universe/$stage", params: { stage: id } });
+        void navigate({ to: "/universe/$stage", params: { stage: id } });
       } else {
         setToast("الكوكب ده لسه مقفول... خلّصي اللي قبله الأول");
       }
-    });
+    },
+    [navigate],
+  );
+
+  useEffect(() => {
+    useScene.getState().setFromPortal(false);
+    useScene.getState().setPlanetHandler(select);
     return () => useScene.getState().setPlanetHandler(null);
-  }, [navigate]);
+  }, [select]);
 
   useEffect(() => {
     if (!justUnlocked) return;
@@ -61,6 +68,7 @@ function Hub() {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-10 flex flex-col justify-between">
+      <PlanetLabels onSelect={select} />
       {fromPortal && <motion.div className="portal-flash fixed inset-0" initial={{ opacity: 1 }} animate={{ opacity: 0 }} transition={{ duration: 1.8 }} />}
       <motion.header initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 1 }} className="header-veil px-5 pb-6 pt-[max(env(safe-area-inset-top),1.1rem)] text-center">
         <h1 dir="ltr" className="font-display text-[1.75rem] italic leading-none text-shimmer">

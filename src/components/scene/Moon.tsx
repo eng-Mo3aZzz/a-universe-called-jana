@@ -7,7 +7,7 @@ import { makeGlowTexture, makeMoonTexture } from "./textures";
 const SPOTS: Record<SceneMode, [number, number, number]> = {
   gate: [0.9, 1.05, -14],
   portal: [1.6, 1.6, -10],
-  hub: [-0.75, 1.1, -18],
+  hub: [-0.85, 0.3, -26],
   stage: [0.8, 0.9, -20],
   finale: [0.85, 1.25, -16],
 };

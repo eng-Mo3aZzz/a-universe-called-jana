@@ -13,7 +13,8 @@ import { Stars } from "./Stars";
 
 function ReadySignal() {
   const done = useRef(false);
-  useFrame(() => {
+  useFrame((state) => {
+    if (import.meta.env.DEV) (window as unknown as { __three?: unknown }).__three = state;
     if (done.current) return;
     done.current = true;
     document.getElementById("galaxy-root")?.setAttribute("data-scene-ready", "true");
@@ -39,7 +40,7 @@ function Scene() {
       <Moon />
       <EdgeRoses />
       <Petals />
-      {mode === "hub" && <Planets />}
+      <Planets />
       {mode === "finale" && <HeroRose />}
       <CameraRig />
       <ReadySignal />

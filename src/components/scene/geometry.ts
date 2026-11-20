@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 /** One rose petal: cupped toward the flower's center, tip curling outward. +y = length, +z = outward. */
-export function createPetalGeometry({ cup = 0.55, curl = 0.3, segU = 12, segV = 10 } = {}) {
+export function createPetalGeometry({ cup = 0.55, curl = 0.3, segU = 16, segV = 12 } = {}) {
   const positions: number[] = [];
   const colors: number[] = [];
   const uvs: number[] = [];

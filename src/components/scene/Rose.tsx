@@ -82,7 +82,7 @@ export function Rose({ bloom = 1, bloomRef, palette = ROSE_PALETTES.burgundy, st
         const t = i / (PETALS - 1);
         const az = i * GOLDEN + seed;
         const closed = 0.04 + 0.3 * t * t;
-        const open = 0.18 + 1.12 * Math.pow(t, 0.95);
+        const open = 0.16 + 1.0 * Math.pow(t, 1.1);
         const theta = closed + (open - closed) * b * (0.22 + 0.78 * t);
         const len = 0.3 + 0.74 * Math.pow(t, 0.8);
         const r = 0.012 + 0.06 * t * (0.4 + b * 0.6);
